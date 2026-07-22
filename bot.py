@@ -59,12 +59,17 @@ async def detectar_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 async def recibir_foto_y_sinopsis(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Recibe la foto con texto del administrador y la distribuye."""
+    """Recibe la foto con texto del administrador y la distribuye con un enlace añadido."""
     msg = update.message
     
     if msg.photo and msg.caption:
         photo_id = msg.photo[-1].file_id
-        caption = msg.caption
+        
+        # --- AQUÍ ESTÁ LA MAGIA ---
+        # Unimos tu sinopsis original con el mensaje extra y el enlace
+        enlace_texto = "\n\nver aqui 👇\nhttps://t.me/+Fzq4WuF10iw2ZTM5"
+        caption_final = msg.caption + enlace_texto
+        # ---------------------------
         
         if not known_chats:
             await msg.reply_text("⚠️ Aún no hay grupos o canales registrados. Agrega el bot a un canal/grupo primero.")
@@ -73,21 +78,20 @@ async def recibir_foto_y_sinopsis(update: Update, context: ContextTypes.DEFAULT_
         enviados = 0
         for chat_id in known_chats:
             try:
-                # Envía la foto con la sinopsis tal cual se recibió
+                # Envía la foto con la sinopsis modificada
                 await context.bot.send_photo(
                     chat_id=chat_id,
                     photo=photo_id,
-                    caption=caption,
+                    caption=caption_final,
                     parse_mode="Markdown"
                 )
                 enviados += 1
             except Exception as e:
                 logger.warning(f"No se pudo enviar al chat {chat_id}: {e}")
 
-        await msg.reply_text(f"✅ Sinopsis enviada exitosamente a {enviados} canal(es)/grupo(s).")
+            await msg.reply_text(f"✅ Sinopsis enviada exitosamente a {enviados} canal(es)/grupo(s).")
     else:
         await msg.reply_text("❌ Por favor, asegúrate de enviar una **imagen** y de incluir la **sinopsis** en la descripción de la foto.")
-
 # --- WEBHOOK aiohttp ---
 async def webhook_handler(request):
     data = await request.json()
