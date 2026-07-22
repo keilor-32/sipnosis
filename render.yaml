@@ -7,7 +7,7 @@ services:
     startCommand: python bot.py
     envVars:
       - key: TOKEN
-        value: "7644340004:AAFWXO7fKl18ky221lUCXCg3GRx_LNs8oQU"
+        value: "8237972779:AAHtfXJu7wj_yTY2TNdlOnCzJDq8aRwEZ94"
       - key: PROVIDER_TOKEN
         value: ""
       - key: APP_URL
