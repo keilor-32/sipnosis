@@ -7,7 +7,7 @@ services:
     startCommand: python bot.py
     envVars:
       - key: TOKEN
-        value: "8237972779:AAHtfXJu7wj_yTY2TNdlOnCzJDq8aRwEZ94"
+        value: "8269017403:AAGImHTvPFPzStT4rQMxcuL6Nk6BWN9Qvyw"
       - key: APP_URL
         value: "https://telegram-bot-udyat.onrender.com"
           
