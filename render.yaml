@@ -8,12 +8,8 @@ services:
     envVars:
       - key: TOKEN
         value: "8237972779:AAHtfXJu7wj_yTY2TNdlOnCzJDq8aRwEZ94"
-      - key: PROVIDER_TOKEN
-        value: ""
       - key: APP_URL
         value: "https://telegram-bot-udyat.onrender.com"
-      - key: GOOGLE_APPLICATION_CREDENTIALS_JSON
-        sync: false  
           
 
 
