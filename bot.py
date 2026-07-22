@@ -57,19 +57,24 @@ async def detectar_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 text=f"✅ ¡Canal registrado exitosamente! ID: `{channel_id}`",
                 parse_mode="Markdown"
             )
-
 async def recibir_foto_y_sinopsis(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Recibe la foto con texto del administrador y la distribuye con un enlace añadido."""
+    """Recibe la foto y decide si añadir el enlace automático o mantener el del usuario."""
     msg = update.message
     
     if msg.photo and msg.caption:
         photo_id = msg.photo[-1].file_id
         
-        # --- AQUÍ ESTÁ LA MAGIA ---
-        # Unimos tu sinopsis original con el mensaje extra y el enlace
-        enlace_texto = "\n\nver aqui 👇\nhttps://t.me/+Fzq4WuF10iw2ZTM5"
-        caption_final = msg.caption + enlace_texto
-        # ---------------------------
+        # Usamos caption_html para conservar los formatos que le des en Telegram (negritas, enlaces ocultos)
+        caption_con_formato = msg.caption_html
+        enlace_objetivo = "https://t.me/+Fzq4WuF10iw2ZTM5"
+        
+        # Revisamos si el enlace ya está dentro de tu texto (ya sea visible o escondido)
+        if enlace_objetivo in caption_con_formato:
+            # Si ya lo incluiste, el bot no añade nada extra
+            caption_final = caption_con_formato
+        else:
+            # Si no está, el bot lo agrega automáticamente al final
+            caption_final = f"{caption_con_formato}\n\nver aqui 👇\n{enlace_objetivo}"
         
         if not known_chats:
             await msg.reply_text("⚠️ Aún no hay grupos o canales registrados. Agrega el bot a un canal/grupo primero.")
@@ -78,20 +83,21 @@ async def recibir_foto_y_sinopsis(update: Update, context: ContextTypes.DEFAULT_
         enviados = 0
         for chat_id in known_chats:
             try:
-                # Envía la foto con la sinopsis modificada
+                # OJO: Cambiamos parse_mode a "HTML" para que soporte los enlaces escondidos
                 await context.bot.send_photo(
                     chat_id=chat_id,
                     photo=photo_id,
                     caption=caption_final,
-                    parse_mode="Markdown"
+                    parse_mode="HTML" 
                 )
                 enviados += 1
             except Exception as e:
                 logger.warning(f"No se pudo enviar al chat {chat_id}: {e}")
 
-            await msg.reply_text(f"✅ Sinopsis enviada exitosamente a {enviados} canal(es)/grupo(s).")
+        await msg.reply_text(f"✅ Sinopsis enviada exitosamente a {enviados} canal(es)/grupo(s).")
     else:
         await msg.reply_text("❌ Por favor, asegúrate de enviar una **imagen** y de incluir la **sinopsis** en la descripción de la foto.")
+
 # --- WEBHOOK aiohttp ---
 async def webhook_handler(request):
     data = await request.json()
